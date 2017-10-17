@@ -14,7 +14,7 @@ function setup () {
   }
 
   // Add food into the world for the vehicles to eat:
-  for (var i = 0; i < 50; i++) {
+  for (var i = 0; i < 70; i++) {
     var x = random(width);
     var y = random(height);
     food.push(createVector(x, y));

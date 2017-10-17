@@ -1,6 +1,10 @@
 // James Hunt - 17/10/17
 // Vehicle class for coding steering behaviours
 
+//These vehicles will need to eat food and avoid poison to survive
+
+var mutationRate = 0.01; // % Chance of vehicles mutating from parent vehicles
+
 function Vehicle(x, y, dna) {
   this.acceleration = createVector(0, 0);
   this.velocity = createVector(0, -2);
@@ -27,10 +31,23 @@ function Vehicle(x, y, dna) {
     // Perception of poison particles:
     this.dna[3] = random(10, 100); // Between 10 & 100 pixels
   } else {
+    // Adjusting the DNA to apply mutation of the vehicle
     this.dna[0] = dna[0];
+    if (random(1) < mutationRate) {
+      this.dna[0] += random(-0.1, 0.1);
+    }
     this.dna[1] = dna[1];
+    if (random(1) < mutationRate) {
+      this.dna[1] += random(-0.1, 0.1);
+    }
     this.dna[2] = dna[2];
+    if (random(1) < mutationRate) {
+      this.dna[2] += random(-10, 10);
+    }
     this.dna[3] = dna[3];
+    if (random(1) < mutationRate) {
+      this.dna[3] += random(-10, 10);
+    }
   }
 
   // Method to update location of the vehicle
@@ -51,7 +68,7 @@ function Vehicle(x, y, dna) {
 
   // Method to keep track of how attracted to poison and food our vehicle is:
   this.behaviours = function (good, bad) {
-    var goodAttraction = this.eat(good, 0.15, this.dna[2]);
+    var goodAttraction = this.eat(good, 0.3, this.dna[2]);
     var badAttraction = this.eat(bad, -0.7, this.dna[3]);
 
     goodAttraction.mult(this.dna[0]);
