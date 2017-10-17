@@ -1,10 +1,10 @@
 // James Hunt - 17/10/17
 // Vehicle class for coding steering behaviours
 
-function Vehicle(x, y) {
-  this.acceleration = createVector(0,0);
-  this.velocity = createVector(0,-2);
-  this.position = createVector(x,y);
+function Vehicle(x, y, dna) {
+  this.acceleration = createVector(0, 0);
+  this.velocity = createVector(0, -2);
+  this.position = createVector(x, y);
   this.r = 4;
   this.maxspeed = 5;
   this.maxforce = 0.2;
@@ -14,17 +14,24 @@ function Vehicle(x, y) {
   // This DNA will decide the level of attraction towards the food and the poison:
   this.dna = [];
 
-  // Attraction to the food particles:
-  this.dna[0] = random(-5, 5);
+  if (dna === undefined) {
+    // Attraction to the food particles:
+    this.dna[0] = random(-5, 5);
 
-  // Attraction to the poison particles:
-  this.dna[1] = random(-5, 5);
+    // Attraction to the poison particles:
+    this.dna[1] = random(-5, 5);
 
-  // Perception of food particles:
-  this.dna[2] = random(10, 100); // Between 10 & 100 pixels
+    // Perception of food particles:
+    this.dna[2] = random(10, 100); // Between 10 & 100 pixels
 
-  // Perception of poison particles:
-  this.dna[3] = random(10, 100); // Between 10 & 100 pixels
+    // Perception of poison particles:
+    this.dna[3] = random(10, 100); // Between 10 & 100 pixels
+  } else {
+    this.dna[0] = dna[0];
+    this.dna[1] = dna[1];
+    this.dna[2] = dna[2];
+    this.dna[3] = dna[3];
+  }
 
   // Method to update location of the vehicle
   this.update = function() {
@@ -45,14 +52,23 @@ function Vehicle(x, y) {
   // Method to keep track of how attracted to poison and food our vehicle is:
   this.behaviours = function (good, bad) {
     var goodAttraction = this.eat(good, 0.15, this.dna[2]);
-    var badAttraction = this.eat(bad, -0.5, this.dna[3]);
+    var badAttraction = this.eat(bad, -0.7, this.dna[3]);
 
     goodAttraction.mult(this.dna[0]);
     badAttraction.mult(this.dna[1]);
 
     this.applyForce(goodAttraction);
     this.applyForce(badAttraction);
-  }
+  };
+
+  // Method to allow the vehicles to pass on their DNA and procuce more vehicles
+  this.reproduce = function () {
+    if (random(1) < 0.0025) { // Set chance of vehicle reproducing
+      return new Vehicle(this.position.x, this.position.y, this.dna);
+    } else {
+      return null;
+    }
+  };
 
   // Method to locate and eat the closest piece of food:
   this.eat = function (list, nutritionalValue, perceptionRadius) {
@@ -138,18 +154,21 @@ function Vehicle(x, y) {
     var red = color(255, 0, 0);
     var healthIndicator = lerpColor(red, green, this.health);
 
-    fill(healthIndicator);
-    stroke(healthIndicator);
+    fill(healthIndicator); // Make the vehicle appear as color defined above
+    stroke(healthIndicator); //Give vehicle outline of color defined above
 
     strokeWeight(1);
     push();
     translate(this.position.x,this.position.y);
     rotate(angle);
+
+    // Draw our vehicle as a triangle
     beginShape();
     vertex(0, -this.r*2);
     vertex(-this.r, this.r*2);
     vertex(this.r, this.r*2);
     endShape(CLOSE);
+
     pop();
   };
 }

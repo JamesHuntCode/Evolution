@@ -7,10 +7,10 @@ var poison = [];
 
 function setup () {
   createCanvas(640, 360);
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 25; i++) {
     var x = random(width);
     var y = random(height);
-    vehicles[i] = new Vehicle(x, y); // Generate 10 vehicles starting at random locations
+    vehicles[i] = new Vehicle(x, y); // Generate 15 vehicles starting at random locations
   }
 
   // Add food into the world for the vehicles to eat:
@@ -32,7 +32,7 @@ function draw () {
   background(50);
 
   //Keep generating food into the world:
-  if (random(1) < 0.06) {
+  if (random(1) < 0.07) {
     var x = random(width);
     var y = random(height);
     food.push(createVector(x, y));
@@ -66,7 +66,17 @@ function draw () {
     vehicles[i].update();
     vehicles[i].display();
 
+    var offspring = vehicles[i].reproduce();
+    if (offspring != null) {
+      vehicles.push(offspring);
+    }
+
     if (vehicles[i].death()) {
+      var x = vehicles[i].position.x;
+      var y = vehicles[i].position.y;
+
+      food.push(createVector(x, y)); //Create food where vehicles die
+
       vehicles.splice(i, 1); // If vehicle has died, remove it from array of vehicles
     }
   }
